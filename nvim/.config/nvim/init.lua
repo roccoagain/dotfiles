@@ -29,6 +29,11 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+vim.opt.expandtab = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+
 require("lazy").setup({
   spec = {
     {
@@ -63,4 +68,23 @@ require("lazy").setup({
   checker = {
     enabled = true,
   },
+})
+
+local function transparent_background()
+  for _, group in ipairs({
+    "Normal",
+    "NormalNC",
+    "NormalFloat",
+    "SignColumn",
+    "EndOfBuffer",
+    "MsgArea",
+    "FloatBorder",
+  }) do
+    vim.cmd("highlight " .. group .. " guibg=NONE ctermbg=NONE")
+  end
+end
+
+transparent_background()
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = transparent_background,
 })
