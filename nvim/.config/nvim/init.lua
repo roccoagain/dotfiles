@@ -60,6 +60,15 @@ require("lazy").setup({
       "neovim/nvim-lspconfig",
       config = function()
         vim.lsp.enable("clangd")
+
+        vim.keymap.set(
+          "n",
+          "<leader>cf",
+          function()
+            vim.lsp.buf.format({ name = "clangd" })
+          end,
+          { desc = "Format current buffer with clang-format" }
+        )
       end,
     },
   },
