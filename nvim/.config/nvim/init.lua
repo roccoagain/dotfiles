@@ -63,8 +63,37 @@ require("lazy").setup({
       opts = {},
     },
     {
+      "nvim-treesitter/nvim-treesitter",
+      lazy = false,
+      build = ":TSUpdate",
+      config = function()
+        require("nvim-treesitter").install({ "c", "cpp" })
+
+        vim.api.nvim_create_autocmd("FileType", {
+          pattern = { "c", "cpp" },
+          callback = function()
+            vim.treesitter.start()
+          end,
+        })
+      end,
+    },
+    {
       "neovim/nvim-lspconfig",
       config = function()
+        vim.opt.completeopt = { "menuone", "noselect", "popup" }
+
+        vim.api.nvim_create_autocmd("LspAttach", {
+          callback = function(event)
+            local client = assert(vim.lsp.get_client_by_id(event.data.client_id))
+
+            if client:supports_method("textDocument/completion") then
+              vim.lsp.completion.enable(true, client.id, event.buf, {
+                autotrigger = true,
+              })
+            end
+          end,
+        })
+
         vim.lsp.enable("clangd")
         vim.lsp.enable("rust_analyzer")
 
