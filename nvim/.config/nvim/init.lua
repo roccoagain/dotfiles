@@ -67,10 +67,10 @@ require("lazy").setup({
       lazy = false,
       build = ":TSUpdate",
       config = function()
-        require("nvim-treesitter").install({ "c", "cpp" })
+        require("nvim-treesitter").install({ "c", "cpp", "python" })
 
         vim.api.nvim_create_autocmd("FileType", {
-          pattern = { "c", "cpp" },
+          pattern = { "c", "cpp", "python" },
           callback = function()
             vim.treesitter.start()
           end,
@@ -78,24 +78,38 @@ require("lazy").setup({
       end,
     },
     {
+      "saghen/blink.cmp",
+      version = "1.*",
+      dependencies = {
+        "rafamadriz/friendly-snippets",
+      },
+      opts = {
+        keymap = {
+          preset = "enter",
+          ["<C-y>"] = { "select_and_accept" },
+          ["<Tab>"] = { "select_and_accept", "fallback" },
+        },
+        completion = {
+          documentation = {
+            auto_show = true,
+            auto_show_delay_ms = 200,
+          },
+        },
+        sources = {
+          default = { "lsp", "path", "snippets", "buffer" },
+        },
+        fuzzy = {
+          implementation = "prefer_rust_with_warning",
+        },
+      },
+      opts_extend = { "sources.default" },
+    },
+    {
       "neovim/nvim-lspconfig",
       config = function()
-        vim.opt.completeopt = { "menuone", "noselect", "popup" }
-
-        vim.api.nvim_create_autocmd("LspAttach", {
-          callback = function(event)
-            local client = assert(vim.lsp.get_client_by_id(event.data.client_id))
-
-            if client:supports_method("textDocument/completion") then
-              vim.lsp.completion.enable(true, client.id, event.buf, {
-                autotrigger = true,
-              })
-            end
-          end,
-        })
-
         vim.lsp.enable("clangd")
         vim.lsp.enable("rust_analyzer")
+        vim.lsp.enable("basedpyright")
 
         vim.keymap.set(
           "n",
