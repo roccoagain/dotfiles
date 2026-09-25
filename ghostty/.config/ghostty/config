@@ -1,4 +1,4 @@
-background = #202020
+theme = light:default-light,dark:default-dark
 background-opacity = 0.9
 background-blur = true
 window-padding-x = 8
