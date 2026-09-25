@@ -40,6 +40,14 @@ vim.opt.smartcase = false
 vim.opt.number = true
 vim.opt.relativenumber = true
 
+vim.diagnostic.config({
+  virtual_text = {
+    spacing = 2,
+    prefix = "●",
+  },
+  severity_sort = true,
+})
+
 require("lazy").setup({
   spec = {
     {
@@ -107,6 +115,16 @@ require("lazy").setup({
     {
       "neovim/nvim-lspconfig",
       config = function()
+        vim.lsp.config("basedpyright", {
+          settings = {
+            basedpyright = {
+              analysis = {
+                typeCheckingMode = "basic",
+              },
+            },
+          },
+        })
+
         vim.lsp.enable("clangd")
         vim.lsp.enable("rust_analyzer")
         vim.lsp.enable("basedpyright")
