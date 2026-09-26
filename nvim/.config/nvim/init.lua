@@ -141,9 +141,9 @@ require("lazy").setup({
           },
         })
 
-        vim.lsp.enable({ "clangd", "rust_analyzer", "basedpyright" })
+        vim.lsp.enable({ "clangd", "rust_analyzer", "basedpyright", "ruff" })
 
-        local formatters = { clangd = true, rust_analyzer = true }
+        local formatters = { clangd = true, rust_analyzer = true, ruff = true }
 
         vim.keymap.set(
           "n",
@@ -155,7 +155,7 @@ require("lazy").setup({
               end,
             })
           end,
-          { desc = "Format current buffer with clang-format or rustfmt" }
+          { desc = "Format current buffer with clang-format, rustfmt or Ruff" }
         )
       end,
     },
