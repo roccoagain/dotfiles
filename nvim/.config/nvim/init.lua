@@ -75,10 +75,10 @@ require("lazy").setup({
       lazy = false,
       build = ":TSUpdate",
       config = function()
-        require("nvim-treesitter").install({ "c", "cpp", "python" })
+        require("nvim-treesitter").install({ "c", "cpp", "python", "rust" })
 
         vim.api.nvim_create_autocmd("FileType", {
-          pattern = { "c", "cpp", "python" },
+          pattern = { "c", "cpp", "python", "rust" },
           callback = function()
             vim.treesitter.start()
           end,
@@ -125,6 +125,16 @@ require("lazy").setup({
           },
         })
 
+        vim.lsp.config("rust_analyzer", {
+          settings = {
+            ["rust-analyzer"] = {
+              check = {
+                command = "clippy",
+              },
+            },
+          },
+        })
+
         vim.lsp.enable("clangd")
         vim.lsp.enable("rust_analyzer")
         vim.lsp.enable("basedpyright")
@@ -133,9 +143,13 @@ require("lazy").setup({
           "n",
           "<leader>cf",
           function()
-            vim.lsp.buf.format({ name = "clangd" })
+            vim.lsp.buf.format({
+              filter = function(client)
+                return client.name == "clangd" or client.name == "rust_analyzer"
+              end,
+            })
           end,
-          { desc = "Format current buffer with clang-format" }
+          { desc = "Format current buffer with clang-format or rustfmt" }
         )
       end,
     },
