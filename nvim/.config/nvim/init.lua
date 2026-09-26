@@ -29,16 +29,20 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+-- Indentation
 vim.opt.expandtab = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.softtabstop = 4
-vim.opt.clipboard = "unnamedplus"
-vim.opt.ignorecase = true
-vim.opt.smartcase = false
 
+-- Search
+vim.opt.ignorecase = true
+
+-- UI
 vim.opt.number = true
 vim.opt.relativenumber = true
+
+vim.opt.clipboard = "unnamedplus"
 
 vim.diagnostic.config({
   virtual_text = {
@@ -55,16 +59,16 @@ require("lazy").setup({
       dependencies = {
         "nvim-lua/plenary.nvim",
       },
-      config = function()
-        require("telescope").setup()
-
-        vim.keymap.set(
-          "n",
+      opts = {},
+      keys = {
+        {
           "<leader>pf",
-          require("telescope.builtin").find_files,
-          { desc = "Find files" }
-        )
-      end,
+          function()
+            require("telescope.builtin").find_files()
+          end,
+          desc = "Find files",
+        },
+      },
     },
     {
       "lewis6991/gitsigns.nvim",
@@ -75,10 +79,12 @@ require("lazy").setup({
       lazy = false,
       build = ":TSUpdate",
       config = function()
-        require("nvim-treesitter").install({ "c", "cpp", "python", "rust" })
+        local languages = { "c", "cpp", "python", "rust" }
+
+        require("nvim-treesitter").install(languages)
 
         vim.api.nvim_create_autocmd("FileType", {
-          pattern = { "c", "cpp", "python", "rust" },
+          pattern = languages,
           callback = function()
             vim.treesitter.start()
           end,
@@ -135,9 +141,9 @@ require("lazy").setup({
           },
         })
 
-        vim.lsp.enable("clangd")
-        vim.lsp.enable("rust_analyzer")
-        vim.lsp.enable("basedpyright")
+        vim.lsp.enable({ "clangd", "rust_analyzer", "basedpyright" })
+
+        local formatters = { clangd = true, rust_analyzer = true }
 
         vim.keymap.set(
           "n",
@@ -145,7 +151,7 @@ require("lazy").setup({
           function()
             vim.lsp.buf.format({
               filter = function(client)
-                return client.name == "clangd" or client.name == "rust_analyzer"
+                return formatters[client.name]
               end,
             })
           end,
